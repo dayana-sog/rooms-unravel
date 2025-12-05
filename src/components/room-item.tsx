@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import type { Room } from '../types/room';
 import { Coffee, Bed, User, ChevronRight, Percent } from 'lucide-react';
 import {
@@ -9,12 +8,12 @@ import {
 
 interface RoomItemProps {
   room: Room;
+  expanded: boolean;
+  onToggle: () => void;
 }
 
-const RoomItem = ({ room }: RoomItemProps) => {
-  const [showAllVariants, setShowAllVariants] = useState(false);
-
-  const variantsToShow = showAllVariants
+const RoomItem = ({ room, expanded, onToggle }: RoomItemProps) => {
+  const variantsToShow = expanded
     ? room.variants
     : room.variants.slice(0, 1);
 
@@ -116,11 +115,11 @@ const RoomItem = ({ room }: RoomItemProps) => {
           <button
             type="button"
             className="self-start text-sm font-medium text-green-700 hover:text-green-800 underline underline-offset-2"
-            onClick={() => setShowAllVariants((prev) => !prev)}
+            onClick={() => onToggle()}
           >
-            {showAllVariants
-              ? 'See less variants'
-              : `See more ${room.variants.length - 1} variant${room.variants.length - 1 > 1 ? 's' : ''}`}
+            {expanded
+              ? 'See less options'
+              : `See more ${room.variants.length - 1} option${room.variants.length - 1 > 1 ? 's' : ''}`}
           </button>
         )}
       </div>
@@ -129,3 +128,4 @@ const RoomItem = ({ room }: RoomItemProps) => {
 };
 
 export default RoomItem;
+

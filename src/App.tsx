@@ -1,13 +1,46 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 import type { Room, RoomsBySerialNo, HotelDetails } from './types/room';
 import { MapPin } from 'lucide-react';
 import RoomList from './components/room-list';
 
+import { useInfiniteScroll } from './hooks/useInfiniteScroll';
+import { RoomListSkeleton } from './components/room-list-skeleton';
+
 const App = () => {
   const [rooms, setRooms] = useState<Room[]>([]);
+  const [visibleRooms, setVisibleRooms] = useState<Room[]>([]);
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(9);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+
   const [hotelDetails, setHotelDetails] = useState<HotelDetails | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const loadMore = useCallback(() => {
+    if (!hasMore || loadingMore || loading) return;
+
+    setLoadingMore(true);
+
+     // Simulate loading delay
+    setTimeout(() => {
+      const start = page * pageSize;
+      const end = start + pageSize;
+      const nextChunk = rooms.slice(start, end);
+
+      if (nextChunk.length === 0) {
+        setHasMore(false);
+      } else {
+        setVisibleRooms(prev => [...prev, ...nextChunk]);
+        setPage(prev => prev + 1);
+      }
+
+      setLoadingMore(false);
+    }, 1200);
+  }, [page, rooms, hasMore, loading, pageSize, loadingMore]);
+
+  const sentinelRef = useInfiniteScroll(loadMore);
 
   useEffect(() => {
     setTimeout(() => {
@@ -15,8 +48,12 @@ const App = () => {
         .then((response) => response.json())
         .then((data: { rooms_by_serial_no: RoomsBySerialNo[], hotel_details: HotelDetails }) => {
           setHotelDetails(data?.hotel_details);
+          
           const flatRooms = data.rooms_by_serial_no.flatMap((group) => group.rooms);
           setRooms(flatRooms);
+
+          // first page
+          setVisibleRooms(flatRooms.slice(0, pageSize));
         }).finally(() => {
           setLoading(false);
         });
@@ -46,7 +83,13 @@ const App = () => {
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Available Rooms</h2>
             <p className="text-gray-500 mb-6">Prices shown are after taxes and discounts.</p>
       
-            <RoomList rooms={rooms} loading={loading} />
+            <RoomList rooms={visibleRooms} loading={loading} />
+
+            {loadingMore && <RoomListSkeleton loadingMoreLength={3} />}
+
+            {hasMore && !loadingMore && (
+              <div ref={sentinelRef} style={{ height: 50 }} />
+            )}
         </div>
       </main>
 
