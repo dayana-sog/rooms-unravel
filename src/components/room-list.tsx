@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useState, memo} from 'react';
 import type { Room } from '../types/room';
 import RoomItem from './room-item';
 import { RoomListSkeleton } from './room-list-skeleton';
@@ -8,7 +8,7 @@ interface RoomListProps {
   loading?: boolean;
 }
 
-const RoomList = ({ rooms, loading }: RoomListProps) => {
+const RoomList = memo(({ rooms, loading }: RoomListProps) => {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
   if (loading && rooms.length === 0) {
@@ -40,6 +40,6 @@ const RoomList = ({ rooms, loading }: RoomListProps) => {
       })}
     </div>
   );
-};
+});
 
 export default RoomList;

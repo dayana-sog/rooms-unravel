@@ -1,22 +1,27 @@
 import { useEffect, useState, useCallback } from 'react';
+import { MapPin } from 'lucide-react';
 
 import type { Room, RoomsBySerialNo, HotelDetails } from './types/room';
-import { MapPin } from 'lucide-react';
-import RoomList from './components/room-list';
 
-import { useInfiniteScroll } from './hooks/useInfiniteScroll';
+import RoomList from './components/room-list';
 import { RoomListSkeleton } from './components/room-list-skeleton';
 
+import { useInfiniteScroll } from './hooks/useInfiniteScroll';
+import useIsMobile from './hooks/useIsMobile';
+
 const App = () => {
+  const isMobile = useIsMobile();
+
   const [rooms, setRooms] = useState<Room[]>([]);
   const [visibleRooms, setVisibleRooms] = useState<Room[]>([]);
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(9);
+  const [pageSize] = useState(isMobile ? 6 : 9);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
 
   const [hotelDetails, setHotelDetails] = useState<HotelDetails | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const loadMore = useCallback(() => {
     if (!hasMore || loadingMore || loading) return;
@@ -54,6 +59,8 @@ const App = () => {
 
           // first page
           setVisibleRooms(flatRooms.slice(0, pageSize));
+        }).catch(() => {
+          setError('We are sorry, we are unable to load rooms, try again later.');
         }).finally(() => {
           setLoading(false);
         });
@@ -82,8 +89,15 @@ const App = () => {
         <div className="py-6 px-4">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Available Rooms</h2>
             <p className="text-gray-500 mb-6">Prices shown are after taxes and discounts.</p>
-      
-            <RoomList rooms={visibleRooms} loading={loading} />
+
+            {error ? (
+              <div className="mt-8 rounded-lg border border-red-200 bg-red-50 px-4 py-6 text-red-800">
+                <h3 className="text-lg font-semibold mb-2">Something went wrong</h3>
+                <p className="text-sm">{error}</p>
+              </div>
+            ) : (
+              <RoomList rooms={visibleRooms} loading={loading} />
+            )}
 
             {loadingMore && <RoomListSkeleton loadingMoreLength={3} />}
 
