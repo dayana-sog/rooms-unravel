@@ -12,6 +12,7 @@ export interface Room {
   room_type_code: string;
   variants_count: number;
   variants: RoomVariant[];
+  properties: RoomProperties;
 }
 
 export interface RoomVariant {
@@ -32,8 +33,12 @@ export interface RoomVariant {
   price_info: string;
   original_cancellation_info: OriginalCancellationInfo;
   roomwise_coupon: unknown | null;
-  room_images: RoomImage[];
 }
+
+export interface RoomProperties {
+  room_images?: RoomImage[];
+  video_url?: RoomVideoProperty;
+} 
 
 export interface RoomImage {
   id: string,
@@ -70,7 +75,6 @@ export interface RoomVariantProperties {
   min_stay: string;
   date_apply_min_stay: string;
   on_request: number;
-  video_url: RoomVideoProperty;
 }
 
 export interface RoomVideoProperty {

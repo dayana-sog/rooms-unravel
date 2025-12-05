@@ -1,5 +1,10 @@
+import { useState, useEffect } from 'react'
 import type { Room } from '../types/room';
-import { Coffee, Bed, User, ChevronRight, Percent } from 'lucide-react';
+import { type CarouselApi } from "@/components/ui/carousel"
+import { Coffee, Bed, User, ChevronRight, Percent, ChevronLeft } from 'lucide-react';
+import LazyImage from './ui/lazy-image';
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
+
 import {
   Tooltip,
   TooltipContent,
@@ -13,19 +18,84 @@ interface RoomItemProps {
 }
 
 const RoomItem = ({ room, expanded, onToggle }: RoomItemProps) => {
+  const [indexImagemShow, setIndexImagemShow] = useState(0);
+  const [apiCarousel, setApiCarousel] = useState<CarouselApi>()
+
   const variantsToShow = expanded
     ? room.variants
     : room.variants.slice(0, 1);
+
+  const imageUrls = room.properties.room_images
+    ? room.properties.room_images.flatMap((img) => img.image_urls)
+    : [];
+
+  const videoUrl = room.properties.video_url
+    ? room.properties.video_url.med
+    : '';
+
+  useEffect(() => {
+    if (!apiCarousel) {
+      return
+    }
+ 
+    apiCarousel.on("select", () => {
+      setIndexImagemShow(apiCarousel.selectedScrollSnap() + 1)
+    })
+  }, [apiCarousel])
 
   return (
     <div className="flex flex-col bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow max-w-sm mx-auto w-full">
       {/* Image Section */}
       <div className="relative h-56 w-full">
-        <img
-          src="/vite.svg"
-          alt={room.name}
-          className="w-full h-full object-cover"
-        />
+        {imageUrls.length > 0 ? (
+          <>
+            <Carousel
+              opts={{
+                loop: true,
+              }}
+              setApi={setApiCarousel}
+              className="w-full h-full group"
+              >
+              <CarouselContent className="h-full">
+                {imageUrls.map((src, index) => (
+                  <CarouselItem key={index} className="h-56" >
+                    <LazyImage
+                      src={src}
+                      alt={room.name}
+                      className="w-full h-full object-cover rounded-t-lg"
+                      />
+                      <p>{index}</p>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious 
+                className="absolute cursor-pointer top-1/2 left-2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md opacity-0 pointer-events-none transition-opacity duration-300 group-hover:opacity-100 group-hover:pointer-events-auto"
+              >
+                <ChevronLeft className="w-6 h-6 text-gray-800" />
+              </CarouselPrevious>
+              <CarouselNext 
+                className="absolute cursor-pointer top-1/2 right-2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md opacity-0 pointer-events-none transition-opacity duration-300 group-hover:opacity-100 group-hover:pointer-events-auto"
+              >
+                <ChevronRight className="w-6 h-6 text-gray-800" />
+              </CarouselNext>
+            </Carousel>
+
+            <div className="absolute bottom-2 left-2 flex gap-1">
+              {imageUrls.map((_, index) => (
+                <span
+                  key={index}
+                  className={`h-1.5 w-1.5 rounded-full ${index === indexImagemShow ? 'bg-white' : 'bg-white/50'} border border-white/90`}
+                />
+              ))}
+            </div>
+          </>
+        ) : (
+          <LazyImage
+            src="/vite.svg"
+            alt={room.name}
+            className="w-full h-full object-cover rounded-t-lg"
+          />
+        )}
       </div>
 
       {/* Variants Section */}
