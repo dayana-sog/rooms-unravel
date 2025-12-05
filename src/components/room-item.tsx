@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react'
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
+import { Coffee, Bed, User, ChevronRight, Percent, ChevronLeft } from 'lucide-react';
+import Autoplay from "embla-carousel-autoplay"
+
 import type { Room } from '../types/room';
 import { type CarouselApi } from "@/components/ui/carousel"
-import { Coffee, Bed, User, ChevronRight, Percent, ChevronLeft } from 'lucide-react';
+
 import LazyImage from './ui/lazy-image';
-import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
+import LazyVideo from './ui/lazy-video';
 
 import {
   Tooltip,
@@ -33,6 +37,8 @@ const RoomItem = ({ room, expanded, onToggle }: RoomItemProps) => {
     ? room.properties.video_url.med
     : '';
 
+  const totalSlides = (videoUrl ? 1 : 0) + imageUrls.length;
+
   useEffect(() => {
     if (!apiCarousel) {
       return
@@ -47,56 +53,72 @@ const RoomItem = ({ room, expanded, onToggle }: RoomItemProps) => {
     <div className="flex flex-col bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow max-w-sm mx-auto w-full">
       {/* Image Section */}
       <div className="relative h-56 w-full">
-        {imageUrls.length > 0 ? (
-          <>
-            <Carousel
-              opts={{
-                loop: true,
-              }}
-              setApi={setApiCarousel}
-              className="w-full h-full group"
-              >
-              <CarouselContent className="h-full">
-                {imageUrls.map((src, index) => (
-                  <CarouselItem key={index} className="h-56" >
-                    <LazyImage
-                      src={src}
-                      alt={room.name}
-                      className="w-full h-full object-cover rounded-t-lg"
-                      />
-                      <p>{index}</p>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious 
-                className="absolute cursor-pointer top-1/2 left-2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md opacity-0 pointer-events-none transition-opacity duration-300 group-hover:opacity-100 group-hover:pointer-events-auto"
-              >
-                <ChevronLeft className="w-6 h-6 text-gray-800" />
-              </CarouselPrevious>
-              <CarouselNext 
-                className="absolute cursor-pointer top-1/2 right-2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md opacity-0 pointer-events-none transition-opacity duration-300 group-hover:opacity-100 group-hover:pointer-events-auto"
-              >
-                <ChevronRight className="w-6 h-6 text-gray-800" />
-              </CarouselNext>
-            </Carousel>
+      {videoUrl || imageUrls.length > 0 ? (
+        <>
+          <Carousel
+            plugins={[Autoplay({ delay: 3000 })]}
+            setApi={setApiCarousel}
+            className="w-full h-full group"
+          >
+            <CarouselContent className="h-full">
+              {videoUrl && (
+                <CarouselItem className="h-56" key="video">
+                  <LazyVideo
+                    src={videoUrl}
+                    className="w-full h-full object-cover rounded-t-lg"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                  />
+                </CarouselItem>
+              )}
 
+              {imageUrls.map((src, index) => (
+                <CarouselItem key={index} className="h-56">
+                  <LazyImage
+                    src={src}
+                    alt={room.name}
+                    className="w-full h-full object-cover rounded-t-lg"
+                  />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+
+
+            {totalSlides > 1 && (
+              <>
+                <CarouselPrevious 
+                  className="absolute cursor-pointer top-1/2 left-2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md opacity-0 pointer-events-none transition-opacity duration-300 group-hover:opacity-100 group-hover:pointer-events-auto"
+                >
+                  <ChevronLeft className="w-6 h-6 text-gray-800" />
+                </CarouselPrevious>
+
+                <CarouselNext 
+                  className="absolute cursor-pointer top-1/2 right-2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md opacity-0 pointer-events-none transition-opacity duration-300 group-hover:opacity-100 group-hover:pointer-events-auto"
+                >
+                  <ChevronRight className="w-6 h-6 text-gray-800" />
+                </CarouselNext>
+              </>
+            )}
+          </Carousel>
+
+          {totalSlides > 1 && (
             <div className="absolute bottom-2 left-2 flex gap-1">
-              {imageUrls.map((_, index) => (
+              {(videoUrl ? [videoUrl, ...imageUrls] : imageUrls).map((_, index) => (
                 <span
                   key={index}
-                  className={`h-1.5 w-1.5 rounded-full ${index === indexImagemShow ? 'bg-white' : 'bg-white/50'} border border-white/90`}
+                  className={`h-1.5 w-1.5 rounded-full ${
+                    index === indexImagemShow ? 'bg-white' : 'bg-white/50'
+                  } border border-white/90`}
                 />
               ))}
             </div>
-          </>
-        ) : (
-          <LazyImage
-            src="/vite.svg"
-            alt={room.name}
-            className="w-full h-full object-cover rounded-t-lg"
-          />
-        )}
-      </div>
+          )}
+         
+        </>
+      ) : null}
+    </div>
 
       {/* Variants Section */}
       <div className="flex-1 border border-t-0 border-green-500 rounded-b-lg p-5 flex flex-col justify-between space-y-4">
@@ -184,7 +206,7 @@ const RoomItem = ({ room, expanded, onToggle }: RoomItemProps) => {
         {room.variants.length > 1 && (
           <button
             type="button"
-            className="self-start text-sm font-medium text-green-700 hover:text-green-800 underline underline-offset-2"
+            className="cursor-pointer self-start text-sm font-medium text-green-700 hover:text-green-800 underline underline-offset-2"
             onClick={() => onToggle()}
           >
             {expanded
