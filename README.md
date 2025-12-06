@@ -9,7 +9,7 @@ Users can explore hotel rooms—each containing a title, description, price, ima
 **Tela da aplicação**:
 
 <p align="center">
-	<img src="https://postimg.cc/cKwt0kqG" />
+	<img src="https://github.com/dayana-sog/rooms-unravel/blob/main/public/images/Captura%20de%20ecr%C3%A3%202025-12-06%20223411.png" />
 </p>
 
 ---
