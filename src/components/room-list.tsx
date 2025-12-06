@@ -1,7 +1,8 @@
-import {useState, memo} from 'react';
+import {useState, memo, lazy} from 'react';
 import type { Room } from '../types/room';
-import RoomItem from './room-item';
 import { RoomListSkeleton } from './room-list-skeleton';
+
+const RoomItem = lazy(() => import('./room-item'));
 
 interface RoomListProps {
   rooms: Room[];

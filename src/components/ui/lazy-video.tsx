@@ -21,18 +21,29 @@ const LazyVideo = ({
   controls = false
 }: LazyVideoProps) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
   const [isInView, setIsInView] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    if (!containerRef.current || isInView) return;
+    if (!containerRef.current) return;
 
     const observer = new IntersectionObserver(
       entries => {
         entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            setIsInView(true);
-            observer.disconnect();
+          const inView = entry.isIntersecting;
+
+          setIsInView(inView);
+
+          if (!inView) {
+            // AutoPause when leaving viewport
+            videoRef.current?.pause();
+          } else {
+            // AutoPlay when returning to viewport
+            if (autoPlay) {
+              videoRef.current?.play().catch(() => {});
+            }
           }
         });
       },
@@ -45,7 +56,7 @@ const LazyVideo = ({
 
     observer.observe(containerRef.current);
     return () => observer.disconnect();
-  }, [isInView]);
+  }, [autoPlay]);
 
   return (
     <div
@@ -56,12 +67,14 @@ const LazyVideo = ({
 
       {isInView && (
         <video
+          ref={videoRef}
           src={src}
           poster={poster}
           autoPlay={autoPlay}
           muted={muted}
           loop={loop}
           controls={controls}
+          playsInline
           className="w-full h-full object-cover"
           onLoadedData={() => setIsLoaded(true)}
         />
