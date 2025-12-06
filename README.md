@@ -6,7 +6,7 @@ It implements a **responsive room listing** interface with infinite scrolling, o
 Users can explore hotel rooms—each containing a title, description, price, images, videos, and variants—optimized for performance and smooth UX.
 
 ---
-**Tela da aplicação**:
+**Application image**:
 
 <p align="center">
 	<img src="https://github.com/dayana-sog/rooms-unravel/blob/main/public/images/Captura%20de%20ecr%C3%A3%202025-12-06%20223411.png" />
@@ -14,72 +14,72 @@ Users can explore hotel rooms—each containing a title, description, price, ima
 
 ---
 
-## 🚀 Tech Stack
+### 🚀 Tech Stack
 
-### **Framework & Tooling**
+#### **Framework & Tooling**
 
 * React 19
 * TypeScript
 * Vite
 
-### **State Management**
+#### **State Management**
 
 * Redux Toolkit (RTK) – slices, reducers, async thunks
 * react-redux
 
-### **Styling & UI**
+#### **Styling & UI**
 
 * Tailwind CSS 4
 * Shadcn/Radix UI primitives
 * lucide-react icons
 * clsx, tailwind-merge, class-variance-authority (utilities)
 
-### **UX Enhancements**
+#### **UX Enhancements**
 
 * IntersectionObserver for lazy-loaded media
 * embla-carousel (optional sliders)
 
 ---
 
-# 🧩 Challenge Requirements — Implemented
+## 🧩 Challenge Requirements — Implemented
 
-### ✔️ Room Listing Component
+#### ✔️ Room Listing Component
 
 * Reusable component for displaying rooms
 * Shows: name, description, price, variants, images, and videos
 
-### ✔️ Media Priority Rule (as defined in challenge)
+#### ✔️ Media Priority Rule (as defined in challenge)
 
 1. If a room has **videos**, show them (`video_url`)
 2. If no videos, show **images** (`room_images`)
 3. If no media: show nothing
 
-### ✔️ Image Optimization
+#### ✔️ Image Optimization
 
 * Lazy loading via `loading="lazy"`
 * Responsive images using `srcset`
 * Placeholder skeleton while loading
 
-### ✔️ Video Optimization
+#### ✔️ Video Optimization
 
 * Videos load *only when visible*
 * Autoplay when entering viewport
 * Pause when leaving viewport
 * Implemented with **IntersectionObserver**
 
-### ✔️ Infinite Scrolling
+#### ✔️ Infinite Scrolling
 
 * Automatically fetches additional data as user scrolls
 * Uses large static JSON dataset (100+ items)
 * Debounced scroll handling
 
-### ✔️ Loading & Error Handling
+#### ✔️ Loading & Error Handling
 
 * Skeleton loaders
 * Fallback error UI
 * Thunks handle fetch errors gracefully
 
-### ✔️ Performance Techniques
+#### ✔️ Performance Techniques
 
 * No media preloading outside viewport
 * Memoized components (`React.memo`, `useMemo`)
@@ -89,7 +89,7 @@ Users can explore hotel rooms—each containing a title, description, price, ima
 
 ---
 
-# 📁 Project Structure
+## 📁 Project Structure
 
 ```
 src/
@@ -108,27 +108,27 @@ public/
 
 ---
 
-# ▶️ Getting Started
+## ▶️ Getting Started
 
-### Install dependencies
+#### Install dependencies
 
 ```bash
 npm install
 ```
 
-### Run development server
+#### Run development server
 
 ```bash
 npm run dev
 ```
 
-### Production build
+#### Production build
 
 ```bash
 npm run build
 ```
 
-### Preview production build
+#### Preview production build
 
 ```bash
 npm run preview
@@ -136,7 +136,7 @@ npm run preview
 
 ---
 
-# 🌐 Deployment
+## 🌐 Deployment
 
 A live version of the application is deployed at:
 
@@ -144,7 +144,7 @@ A live version of the application is deployed at:
 
 ---
 
-# 🔍 Performance Optimization Summary
+## 🔍 Performance Optimization Summary
 
 This project implements all performance-related requirements of the challenge:
 
@@ -158,7 +158,7 @@ This project implements all performance-related requirements of the challenge:
 
 ---
 
-# ✔️ Final Notes
+## ✔️ Final Notes
 
 This implementation covers all main challenge requirements and focuses on correctness, scalability, and performance rather than UI refinement (as recommended in the instructions).
 
