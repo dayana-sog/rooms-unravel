@@ -6,6 +6,13 @@ It implements a **responsive room listing** interface with infinite scrolling, o
 Users can explore hotel rooms—each containing a title, description, price, images, videos, and variants—optimized for performance and smooth UX.
 
 ---
+**Tela da aplicação**:
+
+<p align="center">
+	<img src="https://postimg.cc/cKwt0kqG" />
+</p>
+
+---
 
 ## 🚀 Tech Stack
 
@@ -133,7 +140,7 @@ npm run preview
 
 A live version of the application is deployed at:
 
-**<>**
+**<https://rooms-unravel.vercel.app/>**
 
 ---
 
@@ -156,3 +163,8 @@ This project implements all performance-related requirements of the challenge:
 This implementation covers all main challenge requirements and focuses on correctness, scalability, and performance rather than UI refinement (as recommended in the instructions).
 
 Feel free to explore and extend the project further.
+
+
+----------
+
+Made with ♥ by Dayana Gonçalves 👋 
