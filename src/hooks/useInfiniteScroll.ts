@@ -10,7 +10,7 @@ export function useInfiniteScroll(callback: () => void, delay = 200) {
 
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
-        if (timeoutRef.current) return; 
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
         timeoutRef.current = setTimeout(() => {
           callback();
