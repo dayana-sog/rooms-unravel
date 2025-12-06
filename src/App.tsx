@@ -1,34 +1,36 @@
 import { useEffect, useState, useCallback } from 'react';
 import { MapPin } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux'
 
-import type { Room, RoomsBySerialNo, HotelDetails } from './types/room';
+import RoomList from '@/components/room-list';
+import { RoomListSkeleton } from '@/components/room-list-skeleton';
 
-import RoomList from './components/room-list';
-import { RoomListSkeleton } from './components/room-list-skeleton';
-
-import { useInfiniteScroll } from './hooks/useInfiniteScroll';
-import useIsMobile from './hooks/useIsMobile';
+import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
+import useIsMobile from '@/hooks/useIsMobile';
+import type { RootState, AppDispatch } from '@/store';
+import { fetchAllRooms } from '@/store/slices/room';
+import type { Room } from '@/types/room';
 
 const App = () => {
   const isMobile = useIsMobile();
+  const dispatch = useDispatch<AppDispatch>();
 
-  const [rooms, setRooms] = useState<Room[]>([]);
+  const { rooms, hotelDetails, loading, error } = useSelector(
+    (state: RootState) => state.room,
+  );
+
   const [visibleRooms, setVisibleRooms] = useState<Room[]>([]);
   const [page, setPage] = useState(1);
   const [pageSize] = useState(isMobile ? 6 : 9);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
 
-  const [hotelDetails, setHotelDetails] = useState<HotelDetails | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
   const loadMore = useCallback(() => {
     if (!hasMore || loadingMore || loading) return;
 
     setLoadingMore(true);
 
-     // Simulate loading delay
+    // Simulate loading delay
     setTimeout(() => {
       const start = page * pageSize;
       const end = start + pageSize;
@@ -37,8 +39,8 @@ const App = () => {
       if (nextChunk.length === 0) {
         setHasMore(false);
       } else {
-        setVisibleRooms(prev => [...prev, ...nextChunk]);
-        setPage(prev => prev + 1);
+        setVisibleRooms((prev) => [...prev, ...nextChunk]);
+        setPage((prev) => prev + 1);
       }
 
       setLoadingMore(false);
@@ -48,24 +50,16 @@ const App = () => {
   const sentinelRef = useInfiniteScroll(loadMore);
 
   useEffect(() => {
-    setTimeout(() => {
-      fetch('data/sample.json', { cache: 'no-store' })
-        .then((response) => response.json())
-        .then((data: { rooms_by_serial_no: RoomsBySerialNo[], hotel_details: HotelDetails }) => {
-          setHotelDetails(data?.hotel_details);
-          
-          const flatRooms = data.rooms_by_serial_no.flatMap((group) => group.rooms);
-          setRooms(flatRooms);
+    dispatch(fetchAllRooms());
+  }, [dispatch]);
 
-          // first page
-          setVisibleRooms(flatRooms.slice(0, pageSize));
-        }).catch(() => {
-          setError('We are sorry, we are unable to load rooms, try again later.');
-        }).finally(() => {
-          setLoading(false);
-        });
-    }, 2000);
-  }, []);
+  useEffect(() => {
+    if (!rooms.length) return;
+
+    setVisibleRooms(rooms.slice(0, pageSize));
+    setPage(1);
+    setHasMore(true);
+  }, [rooms, pageSize]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -76,7 +70,11 @@ const App = () => {
             <div className="bg-green-600 text-white p-1.5 rounded-md">
                 <MapPin size={20} />
             </div>
-            <h1 className="text-xl font-bold text-gray-800">{hotelDetails?.display_name}</h1>
+            {loading ? (
+              <h1 className="text-xl font-bold text-gray-800">Loading...</h1>
+            ) : (
+              <h1 className="text-xl font-bold text-gray-800">{hotelDetails?.display_name}</h1>
+            )}
           </div>
           <button className="text-sm text-blue-600 font-medium hover:underline">
             Change Search
