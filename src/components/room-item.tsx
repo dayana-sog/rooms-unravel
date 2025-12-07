@@ -14,6 +14,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { formatCurrency } from '@/util/formatCurrency';
 
 interface RoomItemProps {
   room: Room;
@@ -144,15 +145,16 @@ const RoomItem = ({ room, expanded, onToggle }: RoomItemProps) => {
             (prop) => prop.name === 'adult_occupancy'
           )
 
+          
           const pricing = variant.total_price;
           const promo = pricing?.promo_list?.[0];
           const originalPrice = pricing?.total_price_rounded ?? pricing?.total_price ?? 0;
           const discountedPrice = pricing?.discounted_price_rounded ?? pricing?.discounted_price ?? 0;
+          console.log('originalPrice', originalPrice)
+          console.log('discountedPrice', discountedPrice)
           const currency = pricing?.currency ?? 'RM';
           const discountPercentage = promo?.discount ? Math.round(promo.discount * 100) : 0;
           const cancellationPolicy = variant.cancellation_info.free_cancellation_info || 'Cancellation policy';
-
-          const formatPrice = (price: number) => price.toLocaleString();
 
           return (
             <div key={variant.variant_id} className="p-4 border border-gray-200 rounded-lg space-y-3">
@@ -175,10 +177,10 @@ const RoomItem = ({ room, expanded, onToggle }: RoomItemProps) => {
                 <div className="text-xs text-gray-500 mb-0.5">{variant.price_info}</div>
                 <div className="flex items-center gap-2 mt-1">
                   <span className="text-sm text-gray-400 line-through decoration-gray-400">
-                    {currency}{formatPrice(originalPrice)}
+                    {formatCurrency(originalPrice, currency)}
                   </span>
                   <span className="text-xl font-bold text-gray-900">
-                    {currency}{formatPrice(discountedPrice)}
+                    {formatCurrency(discountedPrice, currency)}
                   </span>
                   {discountPercentage > 0 && (
                     <div className="bg-[#244296] text-white text-xs font-bold px-2 py-1 rounded-full flex items-center gap-0.5">
