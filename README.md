@@ -57,7 +57,6 @@ Users can explore hotel rooms—each containing a title, description, price, ima
 #### ✔️ Image Optimization
 
 * Lazy loading via `loading="lazy"`
-* Responsive images using `srcset`
 * Placeholder skeleton while loading
 
 #### ✔️ Video Optimization
