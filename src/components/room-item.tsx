@@ -144,14 +144,11 @@ const RoomItem = ({ room, expanded, onToggle }: RoomItemProps) => {
           const occupancyProp = variant.display_properties.find(
             (prop) => prop.name === 'adult_occupancy'
           )
-
           
           const pricing = variant.total_price;
           const promo = pricing?.promo_list?.[0];
           const originalPrice = pricing?.total_price_rounded ?? pricing?.total_price ?? 0;
           const discountedPrice = pricing?.discounted_price_rounded ?? pricing?.discounted_price ?? 0;
-          console.log('originalPrice', originalPrice)
-          console.log('discountedPrice', discountedPrice)
           const currency = pricing?.currency ?? 'RM';
           const discountPercentage = promo?.discount ? Math.round(promo.discount * 100) : 0;
           const cancellationPolicy = variant.cancellation_info.free_cancellation_info || 'Cancellation policy';
